@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.module_name }} - AdaptLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Module Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ module.module_name }}</h1>
+                    <p class="text-gray-600">Module {{ module.module_order }} • {{ current_user.role.replace('_', ' ').title() }} Path</p>
+                </div>
+                <a href="{{ url_for('dashboard') }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+            
+            <!-- Progress indicator -->
+            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                <i class="fas fa-clock"></i>
+                <span>Estimated time: 30-45 minutes</span>
+                <span class="mx-2">•</span>
+                <i class="fas fa-brain"></i>
+                <span id="difficultyIndicator">Adaptive difficulty</span>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <div id="moduleContent" class="prose max-w-none">
+                <!-- Loading state -->
+                <div id="loadingContent" class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p class="text-gray-600">Generating personalized content...</p>
+                </div>
+                
+                <!-- Content will be loaded here -->
+                <div id="actualContent" class="hidden">
+                    {{ content.generated_text|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation and Quiz -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Ready for the quiz?</h3>
+                    <p class="text-gray-600">Test your understanding of this module</p>
+                </div>
+                <button id="startQuizBtn" 
+                        class="bg-success text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors">
+                    <i class="fas fa-play mr-2"></i>Start Quiz
+                </button>
+            </div>
+        </div>
+        
+        <!-- Quiz Modal -->
+        <div id="quizModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Module Quiz</h3>
+                    <button onclick="closeQuiz()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div id="quizContent">
+                    <!-- Quiz questions will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Modal -->
+        <div id="resultsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <div class="text-center">
+                    <div class="text-6xl mb-4" id="resultIcon">🎉</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Quiz Complete!</h3>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="text-sm text-gray-600 mb-2">Your Score</div>
+                        <div class="text-3xl font-bold text-primary" id="quizScore">0%</div>
+                        <div class="text-sm text-gray-600 mt-2" id="scoreMessage">Good job!</div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button id="continueBtn" onclick="continueToNext()" 
+                                class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
+                            Continue to Next Module
+                        </button>
+                        <button onclick="backToDashboard()" 
+                                class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const moduleId = parseInt('{{ module.id }}');
+let quizQuestions = [];
+let currentQuizQuestion = 0;
+let quizAnswers = [];
+
+// Load content on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadModuleContent();
+});
+
+async function loadModuleContent() {
+    try {
+        const response = await fetch('/get-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ module_id: moduleId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.content) {
+            document.getElementById('actualContent').innerHTML = data.content;
+            document.getElementById('loadingContent').classList.add('hidden');
+            document.getElementById('actualContent').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error loading content:', error);
+        document.getElementById('loadingContent').innerHTML = 
+            '<p class="text-red-600">Error loading content. Please refresh the page.</p>';
+    }
+}
+
+// Quiz functionality
+document.getElementById('startQuizBtn').addEventListener('click', function() {
+    generateQuizQuestions();
+    document.getElementById('quizModal').classList.remove('hidden');
+    document.getElementById('quizModal').classList.add('flex');
+});
+
+function generateQuizQuestions() {
+    // Generate sample quiz questions based on module
+    quizQuestions = [
+        {
+            question: "What is the main concept covered in this module?",
+            options: ["Option A", "Option B", "Option C", "Option D"],
+            correct: 0
+        },
+        {
+            question: "Which of the following is a key takeaway?",
+            options: ["Takeaway A", "Takeaway B", "Takeaway C", "Takeaway D"],
+            correct: 1
+        },
+        {
+            question: "How would you apply this knowledge?",
+            options: ["Application A", "Application B", "Application C", "Application D"],
+            correct: 2
+        }
+    ];
+    
+    displayQuizQuestion(0);
+}
+
+function displayQuizQuestion(index) {
+    if (index >= quizQuestions.length) {
+        submitQuiz();
+        return;
+    }
+    
+    const question = quizQuestions[index];
+    const quizContent = document.getElementById('quizContent');
+    
+    quizContent.innerHTML = `
+        <div class="mb-6">
+            <div class="text-sm text-gray-600 mb-4">Question ${index + 1} of ${quizQuestions.length}</div>
+            <h4 class="text-lg font-semibold text-gray-800 mb-4">${question.question}</h4>
+            
+            <div class="space-y-3">
+                ${question.options.map((option, i) => `
+                    <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="quiz_answer" value="${i}" class="mr-3 text-primary">
+                        <span>${option}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div class="flex justify-between">
+            <button onclick="previousQuizQuestion()" 
+                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors ${index === 0 ? 'invisible' : ''}">
+                Previous
+            </button>
+            <button onclick="nextQuizQuestion()" 
+                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition-colors">
+                ${index === quizQuestions.length - 1 ? 'Submit' : 'Next'}
+            </button>
+        </div>
+    `;
+}
+
+function nextQuizQuestion() {
+    const selected = document.querySelector('input[name="quiz_answer"]:checked');
+    if (!selected) {
+        showToast('Please select an answer', 'warning');
+        return;
+    }
+    
+    quizAnswers[currentQuizQuestion] = {
+        selected: parseInt(selected.value),
+        correct: parseInt(selected.value) === quizQuestions[currentQuizQuestion].correct
+    };
+    
+    if (currentQuizQuestion === quizQuestions.length - 1) {
+        // Last question - submit quiz
+        submitQuiz();
+    } else {
+        currentQuizQuestion++;
+        displayQuizQuestion(currentQuizQuestion);
+    }
+}
+
+function previousQuizQuestion() {
+    if (currentQuizQuestion > 0) {
+        currentQuizQuestion--;
+        displayQuizQuestion(currentQuizQuestion);
+    }
+}
+
+async function submitQuiz() {
+    try {
+        const response = await fetch('/submit-test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                module_id: moduleId,
+                answers: quizAnswers
+            })
+        });
+        
+        const result = await response.json();
+        
+        closeQuiz();
+        showQuizResults(result.score, result.passed);
+        
+    } catch (error) {
+        console.error('Error submitting quiz:', error);
+        showToast('Error submitting quiz. Please try again.', 'error');
+    }
+}
+
+function showQuizResults(score, passed) {
+    document.getElementById('quizScore').textContent = Math.round(score) + '%';
+    
+    const resultIcon = document.getElementById('resultIcon');
+    const scoreMessage = document.getElementById('scoreMessage');
+    const continueBtn = document.getElementById('continueBtn');
+    
+    if (passed) {
+        resultIcon.textContent = '🎉';
+        scoreMessage.textContent = 'Great job! You can proceed to the next module.';
+        continueBtn.classList.remove('hidden');
+    } else {
+        resultIcon.textContent = '📚';
+        scoreMessage.textContent = 'Keep studying! Review the material and try again.';
+        continueBtn.classList.add('hidden');
+    }
+    
+    document.getElementById('resultsModal').classList.remove('hidden');
+    document.getElementById('resultsModal').classList.add('flex');
+}
+
+function closeQuiz() {
+    document.getElementById('quizModal').classList.add('hidden');
+    document.getElementById('quizModal').classList.remove('flex');
+    currentQuizQuestion = 0;
+    quizAnswers = [];
+}
+
+function continueToNext() {
+    window.location.href = '/dashboard';
+}
+
+function backToDashboard() {
+    window.location.href = '/dashboard';
+}
+</script>
+{% endblock %}

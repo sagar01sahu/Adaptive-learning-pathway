@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - AdaptLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary">
+                <i class="fas fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create your account
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Or
+                <a href="{{ url_for('login') }}" class="font-medium text-primary hover:text-secondary">
+                    sign in to existing account
+                </a>
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" id="signupForm">
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input id="name" name="name" type="text" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
+                           placeholder="Enter your full name">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input id="email" name="email" type="email" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
+                           placeholder="Enter your email">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
+                           placeholder="Create a password">
+                    <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
+                           placeholder="Confirm your password">
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <input id="terms" name="terms" type="checkbox" required
+                       class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="terms" class="ml-2 block text-sm text-gray-900">
+                    I agree to the 
+                    <a href="#" class="text-primary hover:text-secondary">Terms of Service</a> 
+                    and 
+                    <a href="#" class="text-primary hover:text-secondary">Privacy Policy</a>
+                </label>
+            </div>
+
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-user-plus text-primary-light group-hover:text-primary-dark"></i>
+                    </span>
+                    Create Account
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500">
+                By signing up, you'll get access to personalized learning paths, 
+                AI-generated content, and progress tracking features.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
+    
+    // Validate passwords match
+    if (password !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+    }
+    
+    // Validate password length
+    if (password.length < 8) {
+        showToast('Password must be at least 8 characters long', 'error');
+        return;
+    }
+    
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: password
+    };
+    
+    try {
+        const response = await fetch('/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Account created successfully! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = result.redirect;
+            }, 1000);
+        } else {
+            showToast(result.error || 'Signup failed', 'error');
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        showToast('An error occurred. Please try again.', 'error');
+    }
+});
+</script>
+{% endblock %}

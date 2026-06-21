@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Initial Assessment - AdaptLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Initial Assessment</h1>
+            <p class="text-xl text-gray-600">
+                Let's determine your current skill level to create the perfect learning path for you.
+            </p>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Progress</span>
+                <span class="text-sm font-medium text-gray-700" id="progressText">0 of {{ questions|length }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full transition-all duration-300" id="progressBar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div class="bg-white rounded-lg shadow-lg p-8" id="quizContainer">
+            <form id="quizForm">
+                {% for question in questions %}
+                <div class="question-slide {% if loop.first %}active{% else %}hidden{% endif %}" data-question="{{ loop.index0 }}">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            Question {{ loop.index }} of {{ questions|length }}
+                        </h3>
+                        <p class="text-lg text-gray-700 mb-6">{{ question.question }}</p>
+                        
+                        <div class="space-y-3">
+                            {% for option in question.options %}
+                            <label class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" 
+                                       name="question_{{ question.id }}" 
+                                       value="{{ loop.index0 }}" 
+                                       class="mr-3 text-primary focus:ring-primary"
+                                       data-correct="{{ 'true' if loop.index0 == question.correct else 'false' }}">
+                                <span class="text-gray-700">{{ option }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button type="button" 
+                                class="prev-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors {% if loop.first %}invisible{% endif %}"
+                                onclick="previousQuestion()">
+                            <i class="fas fa-chevron-left mr-2"></i>Previous
+                        </button>
+                        
+                        {% if loop.last %}
+                        <button type="submit" 
+                                class="next-btn bg-success text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                            Complete Assessment <i class="fas fa-check ml-2"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" 
+                                class="next-btn bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition-colors"
+                                onclick="nextQuestion()">
+                            Next <i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+        
+        <!-- Results Modal -->
+        <div id="resultsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <div class="text-center">
+                    <div class="text-6xl mb-4" id="resultIcon">🎉</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Assessment Complete!</h3>
+                    <p class="text-gray-600 mb-6">
+                        Based on your performance, we've determined your skill level.
+                    </p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="text-sm text-gray-600 mb-2">Your Score</div>
+                        <div class="text-3xl font-bold text-primary" id="finalScore">0%</div>
+                        <div class="text-lg font-semibold text-gray-800 mt-2" id="skillLevel">Beginner</div>
+                    </div>
+                    
+                    <button onclick="proceedToDashboard()" 
+                            class="bg-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-secondary transition-colors">
+                        Start Learning Journey
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentQuestion = 0;
+const totalQuestions = parseInt('{{ questions|length }}');
+let answers = {};
+
+function updateProgress() {
+    const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('progressText').textContent = `${currentQuestion + 1} of ${totalQuestions}`;
+}
+
+function showQuestion(index) {
+    // Hide all questions
+    document.querySelectorAll('.question-slide').forEach(slide => {
+        slide.classList.add('hidden');
+        slide.classList.remove('active');
+    });
+    
+    // Show current question
+    const currentSlide = document.querySelector(`[data-question="${index}"]`);
+    currentSlide.classList.remove('hidden');
+    currentSlide.classList.add('active');
+    
+    updateProgress();
+}
+
+function nextQuestion() {
+    // Check if current question is answered
+    const currentRadios = document.querySelectorAll(`input[name="question_${currentQuestion + 1}"]:checked`);
+    if (currentRadios.length === 0) {
+        showToast('Please select an answer before proceeding', 'warning');
+        return;
+    }
+    
+    if (currentQuestion < totalQuestions - 1) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+    }
+}
+
+// Handle form submission
+document.getElementById('quizForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Collect all answers
+    const formData = new FormData(e.target);
+    const answers = [];
+    
+    // Get all question data from form
+    const questionData = JSON.parse('{{ questions | tojson | safe }}');
+    
+    questionData.forEach((question, index) => {
+        const answer = formData.get('question_' + question.id);
+        if (answer !== null) {
+            const isCorrect = parseInt(answer) === question.correct;
+            answers.push({
+                question_id: question.id,
+                selected: parseInt(answer),
+                correct: isCorrect
+            });
+        }
+    });
+    
+    // Calculate score
+    const correctAnswers = answers.filter(a => a.correct).length;
+    const score = Math.round((correctAnswers / totalQuestions) * 100);
+    
+    try {
+        const response = await fetch('/initial-quiz', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ answers: answers })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showResults(score, result.level);
+        } else {
+            showToast('Failed to submit quiz. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Quiz submission error:', error);
+        showToast('An error occurred. Please try again.', 'error');
+    }
+});
+
+function showResults(score, level) {
+    document.getElementById('finalScore').textContent = score + '%';
+    document.getElementById('skillLevel').textContent = level.charAt(0).toUpperCase() + level.slice(1);
+    
+    // Set appropriate icon based on score
+    const resultIcon = document.getElementById('resultIcon');
+    if (score >= 80) {
+        resultIcon.textContent = '🏆';
+    } else if (score >= 60) {
+        resultIcon.textContent = '🎯';
+    } else {
+        resultIcon.textContent = '🌱';
+    }
+    
+    document.getElementById('resultsModal').classList.remove('hidden');
+    document.getElementById('resultsModal').classList.add('flex');
+}
+
+function proceedToDashboard() {
+    window.location.href = '/dashboard';
+}
+
+// Initialize
+updateProgress();
+</script>
+{% endblock %}

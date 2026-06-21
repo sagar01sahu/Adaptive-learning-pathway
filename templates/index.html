@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}AdaptLearn - Adaptive Learning Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-primary to-secondary text-white">
+    <div class="max-w-7xl mx-auto px-4 py-20">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold mb-6">Master Computer Science with AI-Powered Learning</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                Personalized learning paths that adapt to your pace and style. 
+                Get ready for your dream career in tech with our intelligent platform.
+            </p>
+            <div class="space-x-4">
+                <a href="{{ url_for('signup') }}" class="bg-accent text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition-colors">
+                    Start Learning Free
+                </a>
+                <a href="#features" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary transition-colors">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section id="features" class="py-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Why Choose AdaptLearn?</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Our platform uses cutting-edge AI to create a learning experience that's uniquely yours
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="text-primary text-4xl mb-4">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">AI-Powered Adaptation</h3>
+                <p class="text-gray-600">
+                    Our reinforcement learning engine adjusts content difficulty and pacing based on your performance, 
+                    ensuring optimal learning outcomes.
+                </p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="text-primary text-4xl mb-4">
+                    <i class="fas fa-route"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Personalized Paths</h3>
+                <p class="text-gray-600">
+                    Choose your career focus and get a customized learning journey. From Software Engineering 
+                    to Data Science, we've got you covered.
+                </p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="text-primary text-4xl mb-4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Progress Tracking</h3>
+                <p class="text-gray-600">
+                    Visual progress bars, achievement badges, and detailed analytics help you stay motivated 
+                    and track your learning journey.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Career Paths Section -->
+<section class="bg-gray-100 py-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Career Path</h2>
+            <p class="text-xl text-gray-600">
+                Specialized learning tracks designed for different tech careers
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="text-blue-500 text-4xl mb-4">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Software Engineer</h3>
+                <p class="text-gray-600 mb-6">
+                    Master web development, system design, and software architecture. 
+                    Build full-stack applications and scalable systems.
+                </p>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>HTML, CSS, JavaScript</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>React, Node.js, Python</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>System Architecture</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Cloud Deployment</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="text-green-500 text-4xl mb-4">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Data Scientist</h3>
+                <p class="text-gray-600 mb-6">
+                    Learn machine learning, statistics, and data visualization. 
+                    Build predictive models and extract insights from data.
+                </p>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Python, Pandas, NumPy</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Machine Learning</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Deep Learning</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>MLOps & Deployment</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="text-purple-500 text-4xl mb-4">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Data Engineer</h3>
+                <p class="text-gray-600 mb-6">
+                    Build data pipelines, manage databases, and create scalable data infrastructure. 
+                    Master ETL processes and big data tools.
+                </p>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>SQL, Python</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>ETL Pipelines</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Apache Spark, Kafka</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Cloud Data Services</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">How It Works</h2>
+            <p class="text-xl text-gray-600">
+                Get started in minutes with our simple 4-step process
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+                <h3 class="text-xl font-bold mb-2">Sign Up</h3>
+                <p class="text-gray-600">Create your free account in seconds</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+                <h3 class="text-xl font-bold mb-2">Choose Path</h3>
+                <p class="text-gray-600">Select your career focus and goals</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+                <h3 class="text-xl font-bold mb-2">Take Quiz</h3>
+                <p class="text-gray-600">Assessment to determine your level</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
+                <h3 class="text-xl font-bold mb-2">Start Learning</h3>
+                <p class="text-gray-600">Begin your personalized journey</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-gradient-to-r from-primary to-secondary text-white py-20">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Career?</h2>
+        <p class="text-xl mb-8">
+            Join thousands of students who are already learning smarter with AdaptLearn
+        </p>
+        <a href="{{ url_for('signup') }}" class="bg-accent text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition-colors">
+            Get Started Today - It's Free!
+        </a>
+    </div>
+</section>
+{% endblock %}

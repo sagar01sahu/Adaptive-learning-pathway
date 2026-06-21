@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your Path - AdaptLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Career Focus</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Select the career path that aligns with your goals. This will customize your entire learning experience.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 mb-8">
+            <!-- Software Engineer -->
+            <div class="role-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" 
+                 data-role="software_engineer">
+                <div class="p-8">
+                    <div class="text-blue-500 text-5xl mb-6 text-center">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">Software Engineer</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Build web applications, mobile apps, and scalable software systems. 
+                        Master full-stack development and system architecture.
+                    </p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <h4 class="font-semibold text-gray-800">You'll Learn:</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Frontend: HTML, CSS, JavaScript, React
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Backend: Python, Node.js, APIs
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Databases & Cloud Deployment
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                System Design & Architecture
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            6 Modules per Level
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Scientist -->
+            <div class="role-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" 
+                 data-role="data_scientist">
+                <div class="p-8">
+                    <div class="text-green-500 text-5xl mb-6 text-center">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">Data Scientist</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Extract insights from data, build predictive models, and create 
+                        AI-powered solutions using machine learning.
+                    </p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <h4 class="font-semibold text-gray-800">You'll Learn:</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Python, Pandas, NumPy
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Machine Learning & Statistics
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Deep Learning & Neural Networks
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Data Visualization & MLOps
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                            5-6 Modules per Level
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Engineer -->
+            <div class="role-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" 
+                 data-role="data_engineer">
+                <div class="p-8">
+                    <div class="text-purple-500 text-5xl mb-6 text-center">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">Data Engineer</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Design and build data pipelines, manage databases, and create 
+                        scalable data infrastructure for organizations.
+                    </p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <h4 class="font-semibold text-gray-800">You'll Learn:</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                SQL, Python, ETL Processes
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Big Data: Spark, Hadoop, Kafka
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Data Warehousing & Lakes
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Cloud Data Services
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                            5 Modules per Level
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <button id="confirmSelection" 
+                    class="bg-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                    disabled>
+                Continue with Selected Path
+            </button>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">
+                Don't worry! You can always change your focus later in your profile settings.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedRole = null;
+
+// Add click handlers to role cards
+document.querySelectorAll('.role-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selection from all cards
+        document.querySelectorAll('.role-card').forEach(c => {
+            c.classList.remove('ring-4', 'ring-primary', 'bg-blue-50');
+        });
+        
+        // Add selection to clicked card
+        this.classList.add('ring-4', 'ring-primary', 'bg-blue-50');
+        
+        selectedRole = this.dataset.role;
+        document.getElementById('confirmSelection').disabled = false;
+    });
+});
+
+// Handle form submission
+document.getElementById('confirmSelection').addEventListener('click', async function() {
+    if (!selectedRole) {
+        showToast('Please select a career path', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/role-selection', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role: selectedRole })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Career path selected! Proceeding to assessment...', 'success');
+            setTimeout(() => {
+                window.location.href = result.redirect;
+            }, 1000);
+        } else {
+            showToast(result.error || 'Failed to save selection', 'error');
+        }
+    } catch (error) {
+        console.error('Role selection error:', error);
+        showToast('An error occurred. Please try again.', 'error');
+    }
+});
+</script>
+{% endblock %}

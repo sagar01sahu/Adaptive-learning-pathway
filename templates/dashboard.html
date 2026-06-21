@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AdaptLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Welcome back, {{ user.name }}!</h1>
+                    <p class="text-gray-600 mt-2">
+                        {{ user.role.replace('_', ' ').title() }} • {{ user.level.title() }} Level
+                    </p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-primary" id="completionPercentage">0%</div>
+                            <div class="text-sm text-gray-600">Complete</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-accent" id="currentStreak">0</div>
+                            <div class="text-sm text-gray-600">Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">Learning Progress</span>
+                    <span class="text-sm text-gray-600" id="progressText">0 of {{ learning_path|length }} modules</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-500" 
+                         id="mainProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Learning Path -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Learning Path</h2>
+                    
+                    <div class="space-y-4">
+                        {% for module in learning_path %}
+                        <div class="module-card border rounded-lg p-4 transition-all duration-200 hover:shadow-md
+                                    {% if module.module_order <= user.current_progress %}bg-white border-gray-200{% else %}bg-gray-50 border-gray-100{% endif %}"
+                             data-module-id="{{ module.id }}" data-module-order="{{ module.module_order }}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        {% if progress and module.id in progress.completed_modules %}
+                                        <div class="w-10 h-10 bg-success rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white"></i>
+                                        </div>
+                                        {% elif module.module_order == user.current_progress %}
+                                        <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                            <i class="fas fa-play text-white"></i>
+                                        </div>
+                                        {% elif module.module_order < user.current_progress %}
+                                        <div class="w-10 h-10 bg-success rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white"></i>
+                                        </div>
+                                        {% else %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-lock text-gray-500"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">{{ module.module_name }}</h3>
+                                        <p class="text-sm text-gray-600">Module {{ module.module_order }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-2">
+                                    {% if module.module_order <= user.current_progress %}
+                                    <button onclick="startModule('{{ module.id }}')" 
+                                            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition-colors">
+                                        {% if progress and module.id in progress.completed_modules %}
+                                        Review
+                                        {% else %}
+                                        Start
+                                        {% endif %}
+                                    </button>
+                                    {% else %}
+                                    <span class="text-gray-400 text-sm">Locked</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Current Difficulty -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Adaptive Learning</h3>
+                    <div class="text-center">
+                        <div class="text-3xl mb-2" id="difficultyIcon">🎯</div>
+                        <div class="text-lg font-semibold text-gray-800" id="difficultyLevel">
+                            {% if progress %}Level {{ progress.difficulty }}{% else %}Level 1{% endif %}
+                        </div>
+                        <div class="text-sm text-gray-600 mt-2">
+                            Content adapts based on your performance
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+                    <div class="space-y-3" id="recentActivity">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-plus text-blue-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">Account created</div>
+                                <div class="text-xs text-gray-500">Welcome to AdaptLearn!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Stats</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Modules Completed</span>
+                            <span class="font-semibold" id="completedModules">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Average Score</span>
+                            <span class="font-semibold" id="averageScore">N/A</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Time Spent</span>
+                            <span class="font-semibold" id="timeSpent">0 min</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Achievements -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Achievements</h3>
+                    <div class="grid grid-cols-3 gap-2" id="achievements">
+                        <div class="text-center p-2 bg-gray-100 rounded-lg opacity-50">
+                            <div class="text-2xl">🏆</div>
+                            <div class="text-xs text-gray-600">First Module</div>
+                        </div>
+                        <div class="text-center p-2 bg-gray-100 rounded-lg opacity-50">
+                            <div class="text-2xl">🔥</div>
+                            <div class="text-xs text-gray-600">7-Day Streak</div>
+                        </div>
+                        <div class="text-center p-2 bg-gray-100 rounded-lg opacity-50">
+                            <div class="text-2xl">⭐</div>
+                            <div class="text-xs text-gray-600">Perfect Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load progress data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProgressData();
+});
+
+async function loadProgressData() {
+    try {
+        const response = await fetch('/progress');
+        const data = await response.json();
+        
+        // Update progress bar
+        const completionPercentage = Math.round(data.completion_percentage);
+        document.getElementById('completionPercentage').textContent = completionPercentage + '%';
+        document.getElementById('mainProgressBar').style.width = completionPercentage + '%';
+        
+        // Update completed modules count
+        const completedCount = data.completed_modules.length;
+        const totalModules = parseInt('{{ learning_path|length }}');
+        document.getElementById('progressText').textContent = completedCount + ' of ' + totalModules + ' modules';
+        document.getElementById('completedModules').textContent = completedCount;
+        
+        // Update difficulty display
+        const difficulty = data.current_difficulty;
+        document.getElementById('difficultyLevel').textContent = 'Level ' + difficulty;
+        
+        const difficultyIcons = {1: '🌱', 2: '🎯', 3: '🚀'};
+        document.getElementById('difficultyIcon').textContent = difficultyIcons[difficulty] || '🎯';
+        
+    } catch (error) {
+        console.error('Error loading progress data:', error);
+    }
+}
+
+function startModule(moduleId) {
+    window.location.href = '/module/' + moduleId;
+}
+
+// Auto-refresh progress every 30 seconds
+setInterval(loadProgressData, 30000);
+</script>
+{% endblock %}
